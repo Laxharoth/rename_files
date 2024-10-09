@@ -68,9 +68,38 @@ def elements_in_order(s: str, lst: list) -> bool:
     
     return True
 
+def extract_between(alpha, lst):
+    result:list[str] = []
+    start_pos = 0  # Posición inicial para la búsqueda
+    # Iterar por pares consecutivos en la lista
+    for i in range(len(lst) - 1):
+        first, second = lst[i], lst[i + 1]
+        
+        # Encontrar el índice del primer string
+        start_index = alpha.find(first, start_pos)
+        if start_index == -1:
+            return None
+
+        # Mover el índice después del primer string
+        start_index += len(first)
+
+        # Encontrar el índice del segundo string
+        end_index = alpha.find(second, start_index)
+        if end_index == -1:
+            return None
+
+        # Extraer la subcadena entre los dos strings
+        result.append(alpha[start_index:end_index])
+
+        # Actualizar la posición inicial para la siguiente búsqueda
+        start_pos = end_index
+
+    return result
+
+
 # Function that creates the text given a string patterns
 def generate_text(original:str, target:str, statics:list[str], generators:list[TextGenerator]):
-    """replaces the text of original with target using generators
+    """replaces the text of original with target using generators (the replace variable is $n) where n is the position of the wildcard
 
     Args:
         original (str): _description_
@@ -84,8 +113,15 @@ def generate_text(original:str, target:str, statics:list[str], generators:list[T
     if not elements_in_order(original, statics):
         return original
     starting_index = 0
-    limits = zip(statics[:-1], statics[1:])
     # find the string between each statics
+    wildcard_values = extract_between(original, statics)
+    replacements = [gen(s) for gen,s in zip(generators, wildcard_values)]
+    
+    replacement_target = target
+    for i in range(len(generators)):
+        replacement_target = replacement_target.replace(f"${i}", replacements[i])
+    return replacement_target
+    
     
 
 if __name__ == "__main__":
