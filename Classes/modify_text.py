@@ -85,6 +85,7 @@ def generate_text(original:str, target:str, statics:list[str], generators:list[T
         return original
     starting_index = 0
     limits = zip(statics[:-1], statics[1:])
+    # find the string between each statics
     
 
 if __name__ == "__main__":
