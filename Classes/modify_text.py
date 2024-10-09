@@ -119,7 +119,7 @@ def generate_text(original:str, target:str, statics:list[str], generators:list[T
     
     replacement_target = target
     for i in range(len(generators)):
-        replacement_target = replacement_target.replace(f"${i}", replacements[i])
+        replacement_target = replacement_target.replace(f"${i}", str(replacements[i]))
     return replacement_target
     
     
