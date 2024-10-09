@@ -84,9 +84,13 @@ def extract_between(alpha, lst):
         start_index += len(first)
 
         # Encontrar el índice del segundo string
-        end_index = alpha.find(second, start_index)
-        if end_index == -1:
-            return None
+        if second == '' and i == len(lst) - 2:
+            end_index = len(alpha)
+        else:
+            # Encontrar el índice del segundo string
+            end_index = alpha.find(second, start_index)
+            if end_index == -1:
+                break  # Si no se encuentra, salir del bucle
 
         # Extraer la subcadena entre los dos strings
         result.append(alpha[start_index:end_index])
