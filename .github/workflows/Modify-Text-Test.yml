@@ -1,11 +1,13 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Python application
+name: Test Modify Text
 
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'Classes/modify_text.py'
   pull_request:
     branches: [ "master" ]
 
@@ -14,7 +16,6 @@ permissions:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -23,6 +24,6 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: "3.12"
-    - name: Run Unit Tests
+    - name: Run Unit Tests for Modify Text module
       run: |
-        python -m unittest 
+        python -m unittest test_modify_text.py
