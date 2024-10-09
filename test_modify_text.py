@@ -151,6 +151,13 @@ class TestGenerateTest(unittest.TestCase):
         # matches
         # check counter increases correctly with the counter
         expected_result = "qwert 6 asdfg"
+        replaceinto = "qwert $0 asdfg"
+        result = generate_text(original, replaceinto, statics, generators)
+        
+        # matches
+        # check counter increases correctly with the counter and counter only procs one time
+        replaceinto = "qwert $0$0 asdfg"
+        expected_result = "qwert 1111 asdfg"
         result = generate_text(original, replaceinto, statics, generators)
 
     def test_MixedWildcard(self):
