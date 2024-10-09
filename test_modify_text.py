@@ -99,7 +99,7 @@ class TestGenerateTest(unittest.TestCase):
         replaceinto = "ñlkkj"
         expected_result = "qwert"
         result = generate_text(original, replaceinto, statics, generators)
-        
+
         self.assertEqual(result, expected_result)
         # matches
         original = "asdfg"
@@ -107,32 +107,32 @@ class TestGenerateTest(unittest.TestCase):
         expected_result = "ñlkkj"
 
         result = generate_text(original, replaceinto, statics, generators)
-        
+
         self.assertEqual(result, expected_result)
 
     def test_IdentityWildcard(self):
         statics = ["asdfg", "ñlkjh"]
         generators = [generator_identity]
-        
+
         # does not match
         original = "asdfgñlkj"
         replaceinto = "qwert $0 asdfg"
         expected_result = "asdfgñlkj"
         result = generate_text(original, replaceinto, statics, generators)
         self.assertEqual(result, expected_result)
-        
+
         # matches
         original = "asdfgLOREMñlkjh"
         replaceinto = "qwert $0 asdfg"
         expected_result = "qwert LOREM asdfg"
         result = generate_text(original, replaceinto, statics, generators)
-        
+
         self.assertEqual(result, expected_result)
-    
+
     def test_CounterWildcard(self):
         statics = ["asdfg", "ñlkjh"]
         generators = [generator_counter(1, 5)]
-        
+
         # matches
         original = "asdfgLOREMñlkjh"
         replaceinto = "qwert $0 asdfg"
@@ -140,32 +140,48 @@ class TestGenerateTest(unittest.TestCase):
         # check it replaces with the counter (and counter didn't increased on fail match)
         result = generate_text(original, replaceinto, statics, generators)
         self.assertEqual(result, expected_result)
-        
+
         # does not match
         original = "asdfgñlkj"
         replaceinto = "qwert $0 asdfg"
         expected_result = "asdfgñlkj"
         result = generate_text(original, replaceinto, statics, generators)
         self.assertEqual(result, expected_result)
-        
+
         # matches
         # check counter increases correctly with the counter
         expected_result = "qwert 6 asdfg"
         result = generate_text(original, replaceinto, statics, generators)
-        
+
     def test_MixedWildcard(self):
         statics = ["", "asd", "fgh", "jk", "lñ", ""]
         generators = [
             generator_identity,
             generator_identity,
-            generator_counter,
-            generator_counter,
+            generator_counter(1, 2),
+            generator_counter(1, 3),
             generator_identity,
         ]
+
+        original_values = [
+            "lorem asd ipsum fgh dolor jk sit lñ amet ",
+            "lalalalalalalalalalalalalalalalalal",
+            "consectetuer asd adipiscing fgh el aspect jk et lñ accus ",
+            "asdfgjklñ",
+            "should asd be fgh sufficient jk to lñ just ",
+        ]
+        replace_pattern = "$3 THIS $2 IS $1 EXPECTED $4$0"
+        expected_values = [
+            "1 THIS 1 IS  ipsum  EXPECTED  amet lorem ",
+            "lalalalalalalalalalalalalalalalalal",
+            "4 THIS 3 IS  adipiscing  EXPECTED  accus consectetuer ",
+            "asdfgjklñ",
+            "7 THIS 5 IS  be  EXPECTED  just should ",
+        ]
+        actual_values = [generate_text(original, replace_pattern, statics, generators) for original in original_values]
         
-        original_values = ""
-        replace_pattern = ""
-        expected_values = []
+        self.assertListEqual(actual_values, expected_values)
+
 
 if __name__ == "__main__":
     unittest.main()
