@@ -1,5 +1,5 @@
 from __future__ import annotations
-from abc import ABC, abstractclassmethod
+from abc import ABC
 from typing import TypedDict, Any, Callable, Dict, List
 
 class Event(TypedDict):
@@ -15,7 +15,7 @@ class EventEmitter(ABC):
     __event_manager__:EventManager
     def __init__(self):
         self.__event_manager__= EventManager()
-    @abstractclassmethod
+    @classmethod
     def trigger(self,event_name:str):
         ...
 
