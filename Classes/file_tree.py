@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import List, Literal
 
 from Event.event_manager import Event, EventEmitter
+from Event.EventValues import EventEnum
 
 @dataclass
 class FileDirectory:
@@ -52,8 +53,8 @@ class FileTree(EventEmitter):
             return
         self.__root_directory = self.__current_directory = FileDirectory(root_directory,os.path.abspath(root_directory))
         self.__fill_file_directory()
-        self.trigger('directory-change')
-        self.trigger('files-change')
+        self.trigger(EventEnum.DIRECTORY_CHANGED)
+        self.trigger(EventEnum.FILES_CHANGED)
 
     def set_current_directory(self,current_directory:FileDirectory):
         """Sets the current_directory and updates the file list.
@@ -71,7 +72,7 @@ class FileTree(EventEmitter):
     def reload(self):
         """Reload the files in the current directory"""
         self.__fill_file_directory(False)
-        self.trigger('files-change')
+        self.trigger(EventEnum.DIRECTORY_CHANGED)
 
     @property
     def root_directory(self)->FileDirectory:
@@ -82,7 +83,7 @@ class FileTree(EventEmitter):
         """The directories contained in the root_directory"""
         return self.__directory_list
     @property
-    def file_path(self)->List[FileDirectory]:
+    def file_path(self)->list[FileDirectory]:
         """The files contained in the current directory"""
         return self.__file_path
     
@@ -100,11 +101,11 @@ class FileTree(EventEmitter):
                 return directory
         return None
 
-    def trigger(self,event_name:Literal['directory-change','files-change']):
-        if(event_name == 'directory-change'):
-            return self.__event_manager__.trigger('directory-change',event={ "target":self,'directory':self.__root_directory})
-        if(event_name == 'files-change'):
-            return self.__event_manager__.trigger('files-change',event={ "target":self,'files':self.__file_path})
+    def trigger(self,event_name:Literal[EventEnum.DIRECTORY_CHANGED, EventEnum.FILES_CHANGED]):
+        if(event_name == EventEnum.DIRECTORY_CHANGED):
+            return self.__event_manager__.trigger(EventEnum.DIRECTORY_CHANGED,event={ "target":self,'directory':self.__root_directory})
+        if(event_name == EventEnum.FILES_CHANGED):
+            return self.__event_manager__.trigger(EventEnum.FILES_CHANGED,event={ "target":self,'files':self.__file_path})
 
 class DirectoryChangeEvent(Event):
     """An event fired when the root directory in a FileTree is changed"""
