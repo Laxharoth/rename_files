@@ -6,19 +6,19 @@ class TextGenerator(Protocol):
     def __call__(self, input:str)->str:
         ...
 
-generator_identity:TextGenerator = lambda x: x 
+generator_identity:TextGenerator = lambda input: input 
 
 class generator_counter:
     def __init__(self, initial, increase):
         self.increase = increase
         self.value:int = initial-increase
     
-    def __call__(self, _x:str)->int:
+    def __call__(self, input:str)->str:
         self.value += self.increase
-        return self.value
+        return str(self.value)
     
 # Function that finds and creates TextGenerators for each wildcard. returns list of TextGenerators and search strings
-def get_text_generators(pattern:str) -> tuple[[list[str], list[TextGenerator]]]:
+def get_text_generators(pattern:str) -> tuple[list[str], list[TextGenerator]]:
     """Creates a list of required text patterns and TextGenerators\n    
     '*' means wildcard \n
         if pattern is\n
@@ -116,9 +116,12 @@ def generate_text(original:str, target:str, statics:list[str], generators:list[T
     """
     if not elements_in_order(original, statics):
         return original
-    starting_index = 0
     # find the string between each statics
-    wildcard_values = extract_between(original, statics)
+    wildcard_values: None | list[str] = extract_between(original, statics)
+    
+    if wildcard_values is None:
+        wildcard_values = []
+
     replacements = [gen(s) for gen,s in zip(generators, wildcard_values)]
     
     replacement_target = target
